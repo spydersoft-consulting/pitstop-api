@@ -1,0 +1,56 @@
+## Build Pipeline - Build, publish container image
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      endpoint: spydersoft-gh
+      name: spydersoft-consulting/azure-devops-templates
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    exclude:
+      - README.md
+
+pr:
+  branches:
+    include:
+      - main
+
+extends:
+  template: pipelines/build-api/v1.yml@templates
+  parameters:
+    buildProject: Spydersoft.PitStop.slnx
+    publishProject: src/Spydersoft.PitStop.Api/Spydersoft.PitStop.Api.csproj
+    netCoreVersion: '10.0.x'
+    artifactName: pitStopApi
+    artifactZipName: Spydersoft.PitStop.Api
+    containerRegistryName: github-spydersoft-docker
+    dockerFilePath: src/Spydersoft.PitStop.Api/Dockerfile
+    dockerImageName: spyder007/pitstop-api
+    imageTagVariableName: pitstop_api
+    externalFeedCredentials: SpydersoftGithub
+    ${{ if or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranchName'], 'main')) }}:
+      executeSonar: true
+    ${{ else }}:
+      executeSonar: false
+
+    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+      updateHelmConfig: false
+      buildAndPublishDockerImage: false
+    ${{ else }}:
+      updateHelmConfig: false
+      buildAndPublishDockerImage: true
+
+    sonarEndpointName: sonarcloud-spydersoft
+    sonarProjectKey: spyder007_pitstop
+    sonarProjectName: pitstop
+    sonarExtraProperties: |
+      sonar.coverage.exclusions=**/Program.cs
+    executeTests: true
+    testProjects: '**/*.UnitTests/*.csproj'
+    useSonarCloud: true
+    sonarCloudOrganization: spydersoft-mjg
