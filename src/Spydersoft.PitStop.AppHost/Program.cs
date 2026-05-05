@@ -21,4 +21,18 @@ foreach (var (typeKey, endpointKey) in new[]
     api.WithEnvironment(endpointKey, builder.Configuration[endpointKey] ?? dashboardOtlp);
 }
 
-builder.Build().Run();
+if (builder.Environment.EnvironmentName == "Testing")
+{
+    var testKey = builder.Configuration["Auth:TestKey"]
+        ?? "jRv3YFPH/19t9t5CgsEFgAkykfW5bQhHmceMprLgzlQ=";
+
+    api.WithEnvironment("DOTNET_ENVIRONMENT", "Testing")
+       .WithEnvironment("Auth__TestKey", testKey);
+
+    builder.AddProject<Projects.Spydersoft_PitStop_DataSeeder>("data-seeder")
+        .WithReference(db)
+        .WaitFor(api)
+        .WithEnvironment("PITSTOP_TEST_KEY", testKey);
+}
+
+await builder.Build().RunAsync();

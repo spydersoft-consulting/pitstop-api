@@ -26,6 +26,19 @@
         "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20000",
         "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true"
       }
+    },
+    "Testing": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:15888",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Testing",
+        "DOTNET_ENVIRONMENT": "Testing",
+        "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "http://localhost:18889",
+        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20000",
+        "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true"
+      }
     }
   }
 }

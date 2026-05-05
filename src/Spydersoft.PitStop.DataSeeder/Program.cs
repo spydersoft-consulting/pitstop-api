@@ -4,6 +4,7 @@ using Spydersoft.PitStop.DataSeeder;
 
 var connectionString = args.ElementAtOrDefault(0)
     ?? Environment.GetEnvironmentVariable("PITSTOP_CONNECTION_STRING")
+    ?? Environment.GetEnvironmentVariable("ConnectionStrings__pitstop-db")
     ?? "Host=localhost;Database=pitstop;Username=postgres;Password=postgres";
 
 var testKey = Environment.GetEnvironmentVariable("PITSTOP_TEST_KEY")
@@ -11,7 +12,7 @@ var testKey = Environment.GetEnvironmentVariable("PITSTOP_TEST_KEY")
 
 if (args.Contains("--token-only"))
 {
-    Console.WriteLine(TokenGenerator.Generate(testKey));
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { token = TokenGenerator.Generate(testKey) }));
     return;
 }
 

@@ -48,6 +48,7 @@ test-results/
 playwright-report/
 blob-report/
 .playwright/
+tests/api-integration/.auth/
 
 # Misc
 *.zip

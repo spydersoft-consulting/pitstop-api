@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Spydersoft.PitStop.Api\Spydersoft.PitStop.Api.csproj" />
+    <ProjectReference Include="..\Spydersoft.PitStop.DataSeeder\Spydersoft.PitStop.DataSeeder.csproj" />
   </ItemGroup>
 
 </Project>
