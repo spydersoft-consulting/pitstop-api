@@ -1,0 +1,59 @@
+# PitStop
+
+A self-hosted fuel consumption tracking API. Replaces manual spreadsheet tracking with a REST API backed by PostgreSQL, deployable on a home Kubernetes cluster.
+
+## Features
+
+- Log and manage fill-ups per vehicle
+- Automatic MPG and cost-per-mile calculation
+- Analytics endpoints for trends, spend, and rolling averages
+- Multi-vehicle support with per-user data isolation
+- OAuth2/OIDC authentication via scope-based authorization
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| API | ASP.NET Core (.NET 10) |
+| ORM | Entity Framework Core |
+| Database | PostgreSQL |
+| Auth | OAuth2/OIDC (auth.mattgerega.net) |
+| Local dev | .NET Aspire |
+| Container | Docker (ghcr.io/spyder007/pitstop-api) |
+| CI | Azure DevOps |
+
+## Quick Start
+
+**Prerequisites:** .NET 10 SDK, Docker Desktop
+
+```bash
+# Start API + Postgres via Aspire
+dotnet run --project src/Spydersoft.PitStop.AppHost
+
+# In another terminal — seed test data and print a test token
+dotnet run --project src/Spydersoft.PitStop.DataSeeder
+```
+
+The Aspire dashboard opens at `https://localhost:15888`. The API is available at the port shown there.
+
+## Project Structure
+
+```
+src/
+  Spydersoft.PitStop.Api/          # ASP.NET Core REST API
+  Spydersoft.PitStop.AppHost/      # .NET Aspire local orchestration
+  Spydersoft.PitStop.Contracts/    # Shared request/response DTOs
+  Spydersoft.PitStop.Data/         # EF Core DbContext and entities
+  Spydersoft.PitStop.DataSeeder/   # Test data seeder and JWT generator
+tests/
+  api-integration/                 # Playwright API integration tests
+.devops/
+  pipeline-ci.yml                  # Azure DevOps CI pipeline
+```
+
+## Documentation
+
+- [API Reference](docs/api.md)
+- [Data Model](docs/data-model.md)
+- [Development Guide](docs/development.md)
+- [Infrastructure & Deployment](docs/infrastructure.md)
