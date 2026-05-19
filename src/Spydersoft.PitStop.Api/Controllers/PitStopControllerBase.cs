@@ -11,8 +11,8 @@ public abstract class PitStopControllerBase(PitStopDbContext db) : ControllerBas
 
     protected string GetCurrentUserId() =>
         User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-        ?? User.FindFirst("nameidentifier")?.Value
-        ?? string.Empty;
+        ?? throw new InvalidOperationException(
+            "Authenticated request has no 'sub' claim. Endpoints requiring user identity must be guarded by an authorization policy that requires 'sub'.");
 
     protected Task<bool> VehicleExistsAsync(int vehicleId, string ownerId, CancellationToken ct) =>
         Db.Vehicles.AnyAsync(v => v.Id == vehicleId && v.OwnerId == ownerId, ct);

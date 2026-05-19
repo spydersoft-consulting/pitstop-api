@@ -143,7 +143,7 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
         else if (cost is null)
             cost = Math.Round(price.Value * request.GallonsAdded, 2);
 
-        fillUp.FilledAt = request.FilledAt;
+        fillUp.FilledAt = request.FilledAt.ToUniversalTime();
         fillUp.OdometerReading = request.OdometerReading;
         fillUp.GallonsAdded = request.GallonsAdded;
         fillUp.FuelGrade = ParseFuelGrade(request.FuelGrade);
