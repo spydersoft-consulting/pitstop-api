@@ -39,17 +39,15 @@ extends:
     imageTagVariableName: pitstop_api
     helmfileRepoName: helmfileconfig
     externalFeedCredentials: SpydersoftGithub
+    #if it's a PR or build from main, don't update helmfile config or build/publish docker image
     ${{ if or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranchName'], 'main')) }}:
-      executeSonar: true
-    ${{ else }}:
-      executeSonar: false
-
-    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
       updateHelmConfig: false
       buildAndPublishDockerImage: false
+      executeSonar: true
     ${{ else }}:
-      updateHelmConfig: false
+      updateHelmConfig: true
       buildAndPublishDockerImage: true
+      executeSonar: false
 
     sonarEndpointName: sonarcloud-spydersoft
     sonarProjectKey: spydersoft-consulting_pitstop
