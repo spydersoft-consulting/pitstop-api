@@ -8,7 +8,7 @@ resources:
     - repository: helmfileconfig
       type: github
       endpoint: spydersoft-gh
-      name: spydersoft-consulting/platform-helm-config
+      name: spydersoft-consulting/pitstop-helm-config
 
 trigger:
   branches:
