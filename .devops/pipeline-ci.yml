@@ -35,8 +35,8 @@ extends:
     artifactZipName: Spydersoft.PitStop.Api
     containerRegistryName: github-spydersoft-docker
     dockerFilePath: src/Spydersoft.PitStop.Api/Dockerfile
-    dockerImageName: spydersoft-consulting/pitstop-api
-    imageTagVariableName: pitstop_api
+    dockerImageName: spydersoft-consulting/pitstop-data-api
+    imageTagVariableName: data_api
     helmfileRepoName: helmfileconfig
     externalFeedCredentials: SpydersoftGithub
     #if it's a PR or build from main, don't update helmfile config or build/publish docker image

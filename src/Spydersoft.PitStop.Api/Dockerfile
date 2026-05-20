@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 
-LABEL org.opencontainers.image.source=https://github.com/spyder007/pitstop
+LABEL org.opencontainers.image.source=https://github.com/spydersoft-consulting/pitstop-api
 LABEL org.opencontainers.image.description="PitStop API"
 LABEL org.opencontainers.image.licenses=MIT
 

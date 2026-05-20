@@ -2,7 +2,7 @@
 
 ## Container Image
 
-- **Registry:** `ghcr.io/spyder007/pitstop-api`
+- **Registry:** `ghcr.io/spydersoft-consulting/pitstop-data-api`
 - **Base image:** `mcr.microsoft.com/dotnet/aspnet:10.0`
 - **Port:** `8080` (HTTP)
 - **Runs as:** non-root (`$APP_UID`)
@@ -58,7 +58,7 @@ Three registrations are needed in the identity server at `auth.mattgerega.net`:
 
 | Registration         | Type                | Grant                     | Purpose                         |
 | -------------------- | ------------------- | ------------------------- | ------------------------------- |
-| `pitstop-api`        | API Resource        | —                         | Defines the audience and scopes |
+| `data-api`           | API Resource        | —                         | Defines the audience and scopes |
 | `pitstop-dev-client` | Confidential client | Client Credentials        | Local dev / tooling             |
 | `pitstop-mobile`     | Public client       | Authorization Code + PKCE | Mobile app (Phase 2)            |
 

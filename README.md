@@ -19,7 +19,7 @@ A self-hosted fuel consumption tracking API. Replaces manual spreadsheet trackin
 | Database | PostgreSQL |
 | Auth | OAuth2/OIDC (auth.mattgerega.net) |
 | Local dev | .NET Aspire |
-| Container | Docker (ghcr.io/spyder007/pitstop-api) |
+| Container | Docker (ghcr.io/spydersoft-consulting/pitstop-data-api) |
 | CI | Azure DevOps |
 
 ## Quick Start

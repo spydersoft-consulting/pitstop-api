@@ -18,7 +18,7 @@ Authorization: Bearer <token>
 | `pitstop:write` | All POST, PUT, DELETE endpoints |
 
 OIDC discovery: `https://auth.mattgerega.net/.well-known/openid-configuration`  
-Audience: `pitstop-api`
+Audience: `data-api`
 
 ### Data isolation
 
