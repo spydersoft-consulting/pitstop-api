@@ -7,7 +7,7 @@ const authDir = path.join(__dirname, '.auth');
 const tokenFile = path.join(authDir, 'token.json');
 const seederProject = path.resolve(__dirname, '../../src/Spydersoft.PitStop.DataSeeder');
 const appHostProject = path.resolve(__dirname, '../../src/Spydersoft.PitStop.AppHost');
-const baseUrl = process.env.PITSTOP_BASE_URL ?? 'http://localhost:5295';
+const baseUrl = process.env.PITSTOP_BASE_URL ?? 'http://localhost:8080';
 
 function getToken(): string {
   if (process.env.PITSTOP_TEST_TOKEN) {

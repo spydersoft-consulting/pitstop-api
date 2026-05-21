@@ -10,7 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddSpydersoftTelemetry(typeof(Program).Assembly)
-       .AddSpydersoftSerilog();
+       .AddSpydersoftSerilog(true);
 
 var healthCheckOptions = builder.AddSpydersoftHealthChecks();
 

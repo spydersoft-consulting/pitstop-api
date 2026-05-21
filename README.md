@@ -34,7 +34,7 @@ dotnet run --project src/Spydersoft.PitStop.AppHost
 dotnet run --project src/Spydersoft.PitStop.DataSeeder
 ```
 
-The Aspire dashboard opens at `https://localhost:15888`. The API is available at the port shown there.
+The Aspire dashboard opens at `https://localhost:8001` (or `http://localhost:8000`). The API listens on `http://localhost:8080` and `https://localhost:8081`.
 
 ## Project Structure
 

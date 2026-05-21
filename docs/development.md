@@ -18,7 +18,8 @@ This starts:
 
 - A PostgreSQL container named `pitstop-db`
 - The API, waiting for the database to be ready
-- The Aspire dashboard at `https://localhost:15888`
+- The Aspire dashboard at `https://localhost:8001`
+- The API on `http://localhost:8080` (https `:8081`); Postgres on `:8100`
 
 The API applies EF Core migrations automatically on startup.
 

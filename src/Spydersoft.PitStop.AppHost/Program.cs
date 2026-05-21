@@ -1,25 +1,18 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var db = builder.AddPostgres("postgres")
+var db = builder.AddPostgres("postgres", port: 8100)
+    .WithDataVolume()
     .AddDatabase("pitstop-db");
 
-var dashboardOtlp = builder.Configuration["DOTNET_DASHBOARD_OTLP_ENDPOINT_URL"]
-    ?? "http://localhost:18889";
 
 var api = builder.AddProject<Projects.Spydersoft_PitStop_Api>("api")
+    .WithEndpoint("http", e => { e.Port = 8080; e.TargetPort = 8080; e.IsProxied = false; })
+    .WithEndpoint("https", e => { e.Port = 8081; e.TargetPort = 8081; e.IsProxied = false; })
+    .WithEnvironment("Telemetry__Log__Type", "otlp")
+    .WithEnvironment("Telemetry__Metrics__Type", "otlp")
+    .WithEnvironment("Telemetry__Trace__Type", "otlp")
     .WithReference(db)
     .WaitFor(db);
-
-foreach (var (typeKey, endpointKey) in new[]
-{
-    ("Telemetry__Trace__Type",   "Telemetry__Trace__Otlp__Endpoint"),
-    ("Telemetry__Metrics__Type", "Telemetry__Metrics__Otlp__Endpoint"),
-    ("Telemetry__Log__Type",     "Telemetry__Log__Otlp__Endpoint"),
-})
-{
-    api.WithEnvironment(typeKey, builder.Configuration[typeKey] ?? "otlp");
-    api.WithEnvironment(endpointKey, builder.Configuration[endpointKey] ?? dashboardOtlp);
-}
 
 if (builder.Environment.EnvironmentName == "Testing")
 {
