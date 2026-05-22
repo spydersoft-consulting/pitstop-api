@@ -1,6 +1,8 @@
-# PitStop
+# PitStop API
 
 A self-hosted fuel consumption tracking API. Replaces manual spreadsheet tracking with a REST API backed by PostgreSQL, deployable on a home Kubernetes cluster.
+
+The web frontend lives at [spydersoft-consulting/pitstop-web](https://github.com/spydersoft-consulting/pitstop-web) — a React UI fronted by an OIDC-protected BFF (`OidcProxy.Net`) that calls this API. The two repos can be developed independently; together they form a complete app.
 
 ## Features
 
@@ -57,3 +59,8 @@ tests/
 - [Data Model](docs/data-model.md)
 - [Development Guide](docs/development.md)
 - [Infrastructure & Deployment](docs/infrastructure.md)
+- [Contributing](CONTRIBUTING.md)
+
+## License
+
+Released under the [MIT License](LICENSE).

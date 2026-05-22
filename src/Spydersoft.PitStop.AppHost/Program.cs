@@ -1,8 +1,13 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var db = builder.AddPostgres("postgres", port: 8100)
-    .WithDataVolume()
-    .AddDatabase("pitstop-db");
+var postgres = builder.AddPostgres("postgres", port: 8100);
+
+if (builder.Environment.EnvironmentName != "Testing")
+{
+    postgres.WithDataVolume();
+}
+
+var db = postgres.AddDatabase("pitstop-db");
 
 
 var api = builder.AddProject<Projects.Spydersoft_PitStop_Api>("api")
