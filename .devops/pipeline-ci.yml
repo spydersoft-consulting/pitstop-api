@@ -11,6 +11,9 @@ resources:
       name: spydersoft-consulting/pitstop-helm-config
 
 trigger:
+  tags:
+    include:
+    - "*"
   branches:
     include:
       - main
