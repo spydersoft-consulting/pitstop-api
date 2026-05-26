@@ -5,6 +5,10 @@ resources:
       type: github
       endpoint: spydersoft-gh
       name: spydersoft-consulting/azure-devops-templates
+    - repository: helmfileconfig
+      type: github
+      endpoint: spydersoft-gh
+      name: spydersoft-consulting/pitstop-helm-config
 
 trigger:
   branches:
@@ -23,6 +27,7 @@ pr:
 extends:
   template: pipelines/build-api/v1.yml@templates
   parameters:
+    gitVersionSpec: '6.0.x'
     buildProject: Spydersoft.PitStop.slnx
     publishProject: src/Spydersoft.PitStop.Api/Spydersoft.PitStop.Api.csproj
     netCoreVersion: '10.0.x'
@@ -30,27 +35,28 @@ extends:
     artifactZipName: Spydersoft.PitStop.Api
     containerRegistryName: github-spydersoft-docker
     dockerFilePath: src/Spydersoft.PitStop.Api/Dockerfile
-    dockerImageName: spyder007/pitstop-api
-    imageTagVariableName: pitstop_api
+    dockerImageName: spydersoft-consulting/pitstop-data-api
+    imageTagVariableName: data_api
+    helmfileRepoName: helmfileconfig
     externalFeedCredentials: SpydersoftGithub
+    #if it's a PR or build from main, don't update helmfile config or build/publish docker image
     ${{ if or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranchName'], 'main')) }}:
-      executeSonar: true
-    ${{ else }}:
-      executeSonar: false
-
-    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
       updateHelmConfig: false
       buildAndPublishDockerImage: false
+      executeSonar: true
     ${{ else }}:
-      updateHelmConfig: false
+      updateHelmConfig: true
       buildAndPublishDockerImage: true
+      executeSonar: false
 
     sonarEndpointName: sonarcloud-spydersoft
-    sonarProjectKey: spyder007_pitstop
+    sonarProjectKey: spydersoft-consulting_pitstop
     sonarProjectName: pitstop
     sonarExtraProperties: |
+      sonar.exclusions=**/Migrations/**/*
+      sonar.scanner.scanAll=false
       sonar.coverage.exclusions=**/Program.cs
     executeTests: true
     testProjects: '**/*.UnitTests/*.csproj'
     useSonarCloud: true
-    sonarCloudOrganization: spydersoft-mjg
+    sonarCloudOrganization: spydersoft-consulting

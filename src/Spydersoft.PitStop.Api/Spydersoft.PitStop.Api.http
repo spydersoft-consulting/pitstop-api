@@ -8,9 +8,9 @@
 #   GET https://auth.mattgerega.net/.well-known/openid-configuration → "token_endpoint"
 
 @baseUrl        = http://localhost:8080
-@tokenEndpoint  = https://auth.mattgerega.net/<token-endpoint-path>
+@tokenEndpoint  = https://auth.mattgerega.net/connect/token
 @clientId       = pitstop-dev-client
-@clientSecret   = <your-client-secret>
+@clientSecret   = ItsAFerrari!
 
 # After running the token request below, copy the access_token value here,
 # or use the @name / response variable approach supported by your HTTP client.
@@ -28,7 +28,7 @@
 POST {{tokenEndpoint}}
 Content-Type: application/x-www-form-urlencoded
 
-grant_type=client_credentials&client_id={{clientId}}&client_secret={{clientSecret}}
+grant_type=client_credentials&client_id={{clientId}}&client_secret={{clientSecret}}&scope=pitstop:read%20pitstop:write
 
 # After this runs, set @bearerToken above to: {{tokenRequest.response.body.access_token}}
 

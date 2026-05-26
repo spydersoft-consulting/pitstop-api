@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Spydersoft.Platform.Hosting.StartupExtensions;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddSpydersoftTelemetry(typeof(Program).Assembly)
-       .AddSpydersoftSerilog();
+       .AddSpydersoftSerilog(true);
 
 var healthCheckOptions = builder.AddSpydersoftHealthChecks();
 
@@ -18,6 +19,7 @@ builder.AddNpgsqlDbContext<PitStopDbContext>("pitstop-db");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         if (builder.Environment.IsEnvironment("Testing"))
         {
             var testKey = builder.Configuration["Auth:TestKey"]!;
@@ -36,8 +38,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         }
     });
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(AuthorizationPolicies.Read, p => p.RequireClaim("scope", AuthorizationPolicies.Read))
-    .AddPolicy(AuthorizationPolicies.Write, p => p.RequireClaim("scope", AuthorizationPolicies.Write));
+    .AddPolicy(AuthorizationPolicies.Read, p => p
+        .RequireClaim(JwtRegisteredClaimNames.Sub)
+        .RequireClaim("scope", AuthorizationPolicies.Read))
+    .AddPolicy(AuthorizationPolicies.Write, p => p
+        .RequireClaim(JwtRegisteredClaimNames.Sub)
+        .RequireClaim("scope", AuthorizationPolicies.Write));
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
