@@ -36,6 +36,9 @@ appsettings.Local.json
 .env
 .env.local
 .env.*.local
+# HTTP client env files (developer-local tokens / client secrets)
+http-client.env.json
+http-client.private.env.json
 
 # Node / Yarn
 node_modules/
