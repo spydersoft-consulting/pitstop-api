@@ -50,7 +50,7 @@ extends:
       executeSonar: false
 
     sonarEndpointName: sonarcloud-spydersoft
-    sonarProjectKey: spydersoft-consulting_pitstop
+    sonarProjectKey: spydersoft-consulting_pitstop-api
     sonarProjectName: pitstop
     sonarExtraProperties: |
       sonar.exclusions=**/Migrations/**/*
