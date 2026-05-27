@@ -18,8 +18,6 @@ public class FillUpConfiguration : IEntityTypeConfiguration<FillUp>
         builder.Property(f => f.MilesSinceLastFillUp).HasPrecision(10, 1);
         builder.Property(f => f.MpgThisFillUp).HasPrecision(6, 2);
 
-        builder.Property(f => f.StationName).HasMaxLength(200);
-        builder.Property(f => f.StationAddress).HasMaxLength(500);
         builder.Property(f => f.Notes).HasMaxLength(1000);
 
         builder.HasQueryFilter(f => !f.Vehicle.IsDeleted);

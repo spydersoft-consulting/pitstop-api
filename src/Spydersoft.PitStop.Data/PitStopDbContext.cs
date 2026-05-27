@@ -8,10 +8,12 @@ public class PitStopDbContext(DbContextOptions<PitStopDbContext> options) : DbCo
 {
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
     public DbSet<FillUp> FillUps => Set<FillUp>();
+    public DbSet<Location> Locations => Set<Location>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new VehicleConfiguration());
         modelBuilder.ApplyConfiguration(new FillUpConfiguration());
+        modelBuilder.ApplyConfiguration(new LocationConfiguration());
     }
 }

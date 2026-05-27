@@ -1,4 +1,6 @@
-﻿namespace Spydersoft.PitStop.Contracts.FillUps;
+﻿using Spydersoft.PitStop.Contracts.Locations;
+
+namespace Spydersoft.PitStop.Contracts.FillUps;
 
 public class FillUpDto
 {
@@ -11,10 +13,7 @@ public class FillUpDto
     public decimal PricePerGallon { get; set; }
     public decimal TotalCost { get; set; }
     public bool IsFullFillUp { get; set; }
-    public string? StationName { get; set; }
-    public string? StationAddress { get; set; }
-    public double? Latitude { get; set; }
-    public double? Longitude { get; set; }
+    public LocationSummaryDto? Location { get; set; }
     public string? Notes { get; set; }
 
     // Computed

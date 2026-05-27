@@ -30,6 +30,12 @@ export interface UpdateVehicleRequest {
   tankCapacityGallons?: number;
 }
 
+export interface LocationSummaryDto {
+  id: number;
+  name: string;
+  address?: string | null;
+}
+
 export interface FillUpDto {
   id: number;
   vehicleId: number;
@@ -40,6 +46,8 @@ export interface FillUpDto {
   pricePerGallon: number;
   totalCost: number;
   isFullFillUp: boolean;
+  location?: LocationSummaryDto | null;
+  notes?: string | null;
   milesSinceLastFillUp?: number;
   mpgThisFillUp?: number;
   costPerMile?: number;
@@ -53,6 +61,9 @@ export interface CreateFillUpRequest {
   pricePerGallon?: number;
   totalCost?: number;
   isFullFillUp?: boolean;
+  locationId?: number;
+  location?: CreateLocationRequest;
+  notes?: string;
 }
 
 export interface FillUpRequest extends CreateFillUpRequest {
@@ -103,4 +114,23 @@ export interface SpendDataPoint {
 
 export interface SpendResponse {
   points: SpendDataPoint[];
+}
+
+export interface LocationDto {
+  id: number;
+  name: string;
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  googlePlaceId?: string | null;
+  lastUsedAt?: string | null;
+  useCount: number;
+}
+
+export interface CreateLocationRequest {
+  name: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  googlePlaceId?: string;
 }

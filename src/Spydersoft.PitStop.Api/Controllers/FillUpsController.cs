@@ -1,5 +1,6 @@
 using Spydersoft.PitStop.Api.Services;
 using Spydersoft.PitStop.Contracts.FillUps;
+using Spydersoft.PitStop.Contracts.Locations;
 using Spydersoft.PitStop.Data;
 using Spydersoft.PitStop.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,10 @@ namespace Spydersoft.PitStop.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/vehicles/{vehicleId:int}/fillups")]
-public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
+public class FillUpsController(
+    PitStopDbContext db,
+    FillUpService fillUpService,
+    LocationService locationService)
     : PitStopControllerBase(db)
 {
     private const string OrderByOdometer = "odometer";
@@ -46,6 +50,7 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
         };
 
         var items = await query
+            .Include(f => f.Location)
             .Skip((listQuery.Page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
@@ -66,7 +71,9 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
         if (!await VehicleExistsAsync(vehicleId, GetCurrentUserId(), ct))
             return NotFound();
 
-        var fillUp = await GetFillUpAsync(vehicleId, id, ct);
+        var fillUp = await Db.FillUps
+            .Include(f => f.Location)
+            .FirstOrDefaultAsync(f => f.Id == id && f.VehicleId == vehicleId, ct);
         return fillUp is null ? NotFound() : Ok(MapToDto(fillUp));
     }
 
@@ -74,19 +81,32 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
     [Authorize(Policy = AuthorizationPolicies.Write)]
     public async Task<ActionResult<FillUpDto>> Create(int vehicleId, CreateFillUpRequest request, CancellationToken ct)
     {
-        if (!await VehicleExistsAsync(vehicleId, GetCurrentUserId(), ct))
+        var ownerId = GetCurrentUserId();
+        if (!await VehicleExistsAsync(vehicleId, ownerId, ct))
             return NotFound();
 
         if (request.PricePerGallon is null && request.TotalCost is null)
             return ValidationProblem("At least one of pricePerGallon or totalCost must be provided.");
 
+        var (location, error) = await locationService.ResolveForFillUpAsync(
+            ownerId, request.LocationId, request.Location, ct);
+        if (error is not null)
+            return ValidationProblem(error);
+
         var fillUp = new FillUp { VehicleId = vehicleId };
         ApplyRequest(fillUp, request);
+
+        if (location is not null)
+        {
+            fillUp.Location = location;
+            LocationService.TouchUsage(location, fillUp.FilledAt);
+        }
 
         Db.FillUps.Add(fillUp);
         await Db.SaveChangesAsync(ct);
         await fillUpService.RecalculateComputedFieldsAsync(vehicleId, ct);
 
+        await Db.Entry(fillUp).Reference(f => f.Location).LoadAsync(ct);
         return CreatedAtAction(nameof(GetById), new { vehicleId, id = fillUp.Id }, MapToDto(fillUp));
     }
 
@@ -94,17 +114,35 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
     [Authorize(Policy = AuthorizationPolicies.Write)]
     public async Task<ActionResult<FillUpDto>> Update(int vehicleId, int id, FillUpRequest request, CancellationToken ct)
     {
-        if (!await VehicleExistsAsync(vehicleId, GetCurrentUserId(), ct))
+        var ownerId = GetCurrentUserId();
+        if (!await VehicleExistsAsync(vehicleId, ownerId, ct))
             return NotFound();
 
         if (request.PricePerGallon is null && request.TotalCost is null)
             return ValidationProblem("At least one of pricePerGallon or totalCost must be provided.");
 
-        var fillUp = await GetFillUpAsync(vehicleId, id, ct);
+        var fillUp = await Db.FillUps
+            .Include(f => f.Location)
+            .FirstOrDefaultAsync(f => f.Id == id && f.VehicleId == vehicleId, ct);
         if (fillUp is null)
             return NotFound();
 
+        var (newLocation, error) = await locationService.ResolveForFillUpAsync(
+            ownerId, request.LocationId, request.Location, ct);
+        if (error is not null)
+            return ValidationProblem(error);
+
+        var oldLocation = fillUp.Location;
         ApplyRequest(fillUp, request);
+
+        if (oldLocation?.Id != newLocation?.Id)
+        {
+            if (oldLocation is not null)
+                LocationService.DecrementUsage(oldLocation);
+            if (newLocation is not null)
+                LocationService.TouchUsage(newLocation, fillUp.FilledAt);
+            fillUp.Location = newLocation;
+        }
 
         await Db.SaveChangesAsync(ct);
         await fillUpService.RecalculateComputedFieldsAsync(vehicleId, ct);
@@ -119,9 +157,14 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
         if (!await VehicleExistsAsync(vehicleId, GetCurrentUserId(), ct))
             return NotFound();
 
-        var fillUp = await GetFillUpAsync(vehicleId, id, ct);
+        var fillUp = await Db.FillUps
+            .Include(f => f.Location)
+            .FirstOrDefaultAsync(f => f.Id == id && f.VehicleId == vehicleId, ct);
         if (fillUp is null)
             return NotFound();
+
+        if (fillUp.Location is not null)
+            LocationService.DecrementUsage(fillUp.Location);
 
         Db.FillUps.Remove(fillUp);
         await Db.SaveChangesAsync(ct);
@@ -129,9 +172,6 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
 
         return NoContent();
     }
-
-    private Task<FillUp?> GetFillUpAsync(int vehicleId, int id, CancellationToken ct) =>
-        Db.FillUps.FirstOrDefaultAsync(f => f.Id == id && f.VehicleId == vehicleId, ct);
 
     private static void ApplyRequest(FillUp fillUp, FillUpRequest request)
     {
@@ -150,10 +190,6 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
         fillUp.PricePerGallon = price.Value;
         fillUp.TotalCost = cost.Value;
         fillUp.IsFullFillUp = request.IsFullFillUp;
-        fillUp.StationName = request.StationName;
-        fillUp.StationAddress = request.StationAddress;
-        fillUp.Latitude = request.Latitude;
-        fillUp.Longitude = request.Longitude;
         fillUp.Notes = request.Notes;
     }
 
@@ -171,10 +207,12 @@ public class FillUpsController(PitStopDbContext db, FillUpService fillUpService)
         PricePerGallon = f.PricePerGallon,
         TotalCost = f.TotalCost,
         IsFullFillUp = f.IsFullFillUp,
-        StationName = f.StationName,
-        StationAddress = f.StationAddress,
-        Latitude = f.Latitude,
-        Longitude = f.Longitude,
+        Location = f.Location is null ? null : new LocationSummaryDto
+        {
+            Id = f.Location.Id,
+            Name = f.Location.Name,
+            Address = f.Location.Address,
+        },
         Notes = f.Notes,
         MilesSinceLastFillUp = f.MilesSinceLastFillUp,
         MpgThisFillUp = f.MpgThisFillUp,
