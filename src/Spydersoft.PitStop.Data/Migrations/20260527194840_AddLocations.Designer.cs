@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Spydersoft.PitStop.Data;
@@ -11,9 +12,11 @@ using Spydersoft.PitStop.Data;
 namespace Spydersoft.PitStop.Data.Migrations
 {
     [DbContext(typeof(PitStopDbContext))]
-    partial class PitStopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260527194840_AddLocations")]
+    partial class AddLocations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,8 +48,14 @@ namespace Spydersoft.PitStop.Data.Migrations
                     b.Property<bool>("IsFullFillUp")
                         .HasColumnType("boolean");
 
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
                     b.Property<int?>("LocationId")
                         .HasColumnType("integer");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
 
                     b.Property<decimal?>("MilesSinceLastFillUp")
                         .HasPrecision(10, 1)
@@ -67,6 +76,14 @@ namespace Spydersoft.PitStop.Data.Migrations
                     b.Property<decimal>("PricePerGallon")
                         .HasPrecision(6, 3)
                         .HasColumnType("numeric(6,3)");
+
+                    b.Property<string>("StationAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("StationName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<decimal>("TotalCost")
                         .HasPrecision(8, 2)

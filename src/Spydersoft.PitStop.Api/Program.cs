@@ -48,6 +48,7 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<FillUpService>();
+builder.Services.AddScoped<LocationService>();
 
 var app = builder.Build();
 

@@ -2,6 +2,9 @@ workflow: GitHubFlow/v1
 merge-message-formats:
   pull-request: 'Merge pull request \#(?<PullRequestNumber>\d+) from'
 branches:
+  main:
+    mode: ContinuousDeployment
+    label: ''
   feature:
     mode: ContinuousDelivery
   tags:

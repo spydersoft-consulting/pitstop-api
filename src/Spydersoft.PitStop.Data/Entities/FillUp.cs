@@ -14,10 +14,9 @@ public class FillUp
     public decimal TotalCost { get; set; }
     public bool IsFullFillUp { get; set; }
 
-    public string? StationName { get; set; }
-    public string? StationAddress { get; set; }
-    public double? Latitude { get; set; }
-    public double? Longitude { get; set; }
+    public int? LocationId { get; set; }
+    public Location? Location { get; set; }
+
     public string? Notes { get; set; }
 
     // Stored computed values for query performance

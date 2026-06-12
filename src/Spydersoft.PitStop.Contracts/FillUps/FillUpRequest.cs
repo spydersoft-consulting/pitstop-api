@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Spydersoft.PitStop.Contracts.Locations;
 
 namespace Spydersoft.PitStop.Contracts.FillUps;
 
@@ -23,14 +24,11 @@ public class FillUpRequest
 
     public bool IsFullFillUp { get; set; } = true;
 
-    [MaxLength(200)]
-    public string? StationName { get; set; }
+    /// <summary>Attach an existing location owned by the caller. Mutually exclusive with <see cref="Location"/>.</summary>
+    public int? LocationId { get; set; }
 
-    [MaxLength(500)]
-    public string? StationAddress { get; set; }
-
-    public double? Latitude { get; set; }
-    public double? Longitude { get; set; }
+    /// <summary>Create (or reuse) a location inline. Mutually exclusive with <see cref="LocationId"/>.</summary>
+    public CreateLocationRequest? Location { get; set; }
 
     [MaxLength(1000)]
     public string? Notes { get; set; }
