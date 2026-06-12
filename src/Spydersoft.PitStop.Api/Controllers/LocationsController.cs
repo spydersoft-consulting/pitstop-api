@@ -73,6 +73,44 @@ public class LocationsController(PitStopDbContext db, LocationService locationSe
         return CreatedAtAction(nameof(GetById), new { id = location.Id }, MapToDto(location));
     }
 
+    [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.Write)]
+    public async Task<ActionResult<LocationDto>> Update(
+        int id,
+        UpdateLocationRequest request,
+        CancellationToken ct)
+    {
+        var ownerId = GetCurrentUserId();
+        var location = await Db.Locations
+            .FirstOrDefaultAsync(l => l.Id == id && l.OwnerId == ownerId, ct);
+
+        if (location is null) return NotFound();
+
+        location.Name = request.Name;
+        location.Address = request.Address;
+        location.Latitude = request.Latitude;
+        location.Longitude = request.Longitude;
+        location.GooglePlaceId = request.GooglePlaceId;
+
+        await Db.SaveChangesAsync(ct);
+        return Ok(MapToDto(location));
+    }
+
+    [HttpDelete("{id:int}")]
+    [Authorize(Policy = AuthorizationPolicies.Write)]
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        var ownerId = GetCurrentUserId();
+        var location = await Db.Locations
+            .FirstOrDefaultAsync(l => l.Id == id && l.OwnerId == ownerId, ct);
+
+        if (location is null) return NotFound();
+
+        Db.Locations.Remove(location);
+        await Db.SaveChangesAsync(ct);
+        return NoContent();
+    }
+
     private static LocationDto MapToDto(Location l) => new()
     {
         Id = l.Id,
